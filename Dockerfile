@@ -26,8 +26,6 @@ ENV SAMTOOLS_VERSION=1.24
 
 ENV VCFTOOLS_VERSION=0.1.17
 
-#переменные окружения
-
 ENV SAMTOOLS="${SOFT}/samtools-${SAMTOOLS_VERSION}/bin/samtools" 
 ENV BCFTOOLS="${SOFT}/bcftools-${SAMTOOLS_VERSION}/bin/bcftools" 
 ENV VCFTOOLS="${SOFT}/vcftools-${SAMTOOLS_VERSION}/bin/vcftools"
@@ -42,6 +40,10 @@ WORKDIR /tmp/build
 
 #слои - для каждой библиотеки свой
 
+
+# libdeflate
+# Версия: 1.25
+# Дата создания: 2026-01-25
 RUN wget https://github.com/ebiggers/libdeflate/releases/download/v${LIBDEFLATE_VERSION}/libdeflate-${LIBDEFLATE_VERSION}.tar.gz && \
 	tar -xzf libdeflate-${LIBDEFLATE_VERSION}.tar.gz && \
 	cd libdeflate-${LIBDEFLATE_VERSION} && \
@@ -50,7 +52,11 @@ RUN wget https://github.com/ebiggers/libdeflate/releases/download/v${LIBDEFLATE_
 	cmake --install build && \
 	cd .. && \
 	rm -rf libdeflate-${LIBDEFLATE_VERSION}.tar.gz libdeflate-${LIBDEFLATE_VERSION}
-
+	
+	
+# htslib
+# Версия: 1.24
+# Дата создания: 2026-07-09
 RUN wget https://github.com/samtools/htslib/releases/download/${SAMTOOLS_VERSION}/htslib-${SAMTOOLS_VERSION}.tar.bz2  && \
 	tar -xjf htslib-${SAMTOOLS_VERSION}.tar.bz2 && \
 	cd htslib-${SAMTOOLS_VERSION} && \
@@ -59,7 +65,10 @@ RUN wget https://github.com/samtools/htslib/releases/download/${SAMTOOLS_VERSION
 	make install && \
 	cd .. && \
 	rm -rf htslib-${SAMTOOLS_VERSION}.tar.bz2 htslib-${SAMTOOLS_VERSION} 
-	
+
+# samtools
+# Версия: 1.24
+# Дата создания: 2026-07-09
 RUN wget https://github.com/samtools/samtools/releases/download/${SAMTOOLS_VERSION}/samtools-${SAMTOOLS_VERSION}.tar.bz2  && \
 	tar -xjf samtools-${SAMTOOLS_VERSION}.tar.bz2 && \
 	cd samtools-${SAMTOOLS_VERSION} && \
@@ -68,7 +77,10 @@ RUN wget https://github.com/samtools/samtools/releases/download/${SAMTOOLS_VERSI
 	make install && \
 	cd .. && \
 	rm -rf samtools-${SAMTOOLS_VERSION}.tar.bz2 samtools-${SAMTOOLS_VERSION}
-
+	
+# bcftools
+# Версия: 1.24
+# Дата создания: 2026-07-09
 RUN wget https://github.com/samtools/bcftools/releases/download/${SAMTOOLS_VERSION}/bcftools-${SAMTOOLS_VERSION}.tar.bz2  && \
 	tar -xjf bcftools-${SAMTOOLS_VERSION}.tar.bz2 && \
 	cd bcftools-${SAMTOOLS_VERSION} && \
@@ -77,7 +89,10 @@ RUN wget https://github.com/samtools/bcftools/releases/download/${SAMTOOLS_VERSI
 	make install && \
 	cd .. && \
 	rm -rf bcftools-${SAMTOOLS_VERSION}.tar.bz2 bcftools-${SAMTOOLS_VERSION}
-
+	
+# vcftools
+# Версия: 0.1.17
+# Дата создания: 2025-05-15
 RUN wget https://github.com/vcftools/vcftools/releases/download/v${VCFTOOLS_VERSION}/vcftools-${VCFTOOLS_VERSION}.tar.gz  && \
 	tar -xzf vcftools-${VCFTOOLS_VERSION}.tar.gz  && \
 	cd vcftools-${VCFTOOLS_VERSION} && \
