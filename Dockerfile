@@ -1,5 +1,7 @@
 FROM ubuntu:22.04
 
+ENV DEBIAN_FRONTEND noninteractive
+
 RUN apt update && apt install -y \
 	build-essential \
     wget \
@@ -15,16 +17,18 @@ RUN apt update && apt install -y \
     python3-pip \
     python3-venv && \
     rm -rf /var/lib/apt/lists/*
+    
+RUN pip3 install --no-cache-dir pandas numpy Cython
 
 ENV SOFT=/soft
 ENV LIBDEFLATE_VERSION=1.25
-
 #ENV HTSLIB_VERSION=1.24
 #ENV BCFTOOLS_VER=1.24 
 ENV SAMTOOLS_VERSION=1.24  
 # Поскольку выпускаются параллельно и связанно, то версия у них одна
-
 ENV VCFTOOLS_VERSION=0.1.17
+
+ENV PYSAM_VERSION=0.24.0
 
 ENV SAMTOOLS="${SOFT}/samtools-${SAMTOOLS_VERSION}/bin/samtools" 
 ENV BCFTOOLS="${SOFT}/bcftools-${SAMTOOLS_VERSION}/bin/bcftools" 
@@ -37,9 +41,6 @@ ENV LD_LIBRARY_PATH="${SOFT}/libdeflate-${LIBDEFLATE_VERSION}/lib:${SOFT}/htslib
 ENV C_INCLUDE_PATH="${SOFT}/libdeflate-${LIBDEFLATE_VERSION}/include:${SOFT}/htslib-${SAMTOOLS_VERSION}/include:${C_INCLUDE_PATH}"
 
 WORKDIR /tmp/build
-
-#слои - для каждой библиотеки свой
-
 
 # libdeflate
 # Версия: 1.25
@@ -103,7 +104,25 @@ RUN wget https://github.com/vcftools/vcftools/releases/download/v${VCFTOOLS_VERS
 	rm -rf vcftools-${VCFTOOLS_VERSION}.tar.gz vcftools-${VCFTOOLS_VERSION}
 
 
+# pysam
+# Версия: 0.24.0
+# Дата создания: 2026-04-27
+RUN wget https://github.com/pysam-developers/pysam/archive/refs/tags/v${PYSAM_VERSION}.tar.gz && \
+    tar -xzf v${PYSAM_VERSION}.tar.gz && \
+    cd pysam-${PYSAM_VERSION} && \
+    export HTSLIB_MODE=external && \
+    export HTSLIB_INCLUDE_DIR="${SOFT}/htslib-${SAMTOOLS_VERSION}/include" && \
+    export HTSLIB_LIBRARY_DIR="${SOFT}/htslib-${SAMTOOLS_VERSION}/lib" && \
+    pip3 install . && \
+    cd .. && \
+    rm -rf v${PYSAM_VERSION}.tar.gz pysam-${PYSAM_VERSION}
+
 WORKDIR /
 RUN rm -rf /tmp/build && ldconfig
+
+RUN mkdir -p /ref/GRCh38.d1.vd1_mainChr/sepChrs/
+
+COPY ref_script.py ${SOFT}/ref_script.py
+RUN chmod +x ${SOFT}/ref_script.py
 
 CMD ["/bin/bash"]
